@@ -7,17 +7,17 @@
 
 import UIKit
 
-class ProductsItemView: UIView {
+class ProductItemView: UIView {
+
+    var onAddTapped: (() -> Void)?
 
     private let imageView = UIImageView()
     private let infoView = UIView()
-    private let priceLabel = UILabel()
-    private let addButton = UIButton(type: .system)
-    
-    private let nameLabel = UILabel()
-    private let stockLabel = UILabel()
 
-    var onAddTapped: (() -> Void)?
+    private let nameLabel = UILabel()
+    private let priceLabel = UILabel()
+    private let stockLabel = UILabel()
+    private let addButton = UIButton(type: .system)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,24 +37,23 @@ class ProductsItemView: UIView {
         infoView.backgroundColor = .systemRed
         infoView.translatesAutoresizingMaskIntoConstraints = false
 
-        // Price
-        priceLabel.textColor = .white
-        priceLabel.font = .boldSystemFont(ofSize: 16)
-
-        // Button
-        addButton.setTitle("Agregar", for: .normal)
-        addButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
-
-        
-        // nombre
+        // Labels
         nameLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        nameLabel.textColor = .white
         nameLabel.numberOfLines = 2
-        //stock
+
+        priceLabel.font = .boldSystemFont(ofSize: 14)
+        priceLabel.textColor = .white
+
         stockLabel.font = .systemFont(ofSize: 12)
         stockLabel.textColor = .white
 
-        
+        // Button
+        addButton.setTitle("Agregar", for: .normal)
+        addButton.tintColor = .white
+        addButton.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
+        addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
+
         let leftStack = UIStackView(arrangedSubviews: [nameLabel, priceLabel, stockLabel])
         leftStack.axis = .vertical
         leftStack.spacing = 2
@@ -62,7 +61,8 @@ class ProductsItemView: UIView {
         let infoStack = UIStackView(arrangedSubviews: [leftStack, addButton])
         infoStack.axis = .horizontal
         infoStack.distribution = .equalSpacing
-
+        infoStack.alignment = .center
+        infoStack.translatesAutoresizingMaskIntoConstraints = false
 
         infoView.addSubview(infoStack)
         addSubview(imageView)
@@ -77,7 +77,7 @@ class ProductsItemView: UIView {
             infoView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
             infoView.leadingAnchor.constraint(equalTo: leadingAnchor),
             infoView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            infoView.heightAnchor.constraint(equalToConstant: 40),
+            infoView.heightAnchor.constraint(equalToConstant: 50),
 
             infoStack.leadingAnchor.constraint(equalTo: infoView.leadingAnchor, constant: 8),
             infoStack.trailingAnchor.constraint(equalTo: infoView.trailingAnchor, constant: -8),
@@ -95,5 +95,4 @@ class ProductsItemView: UIView {
     @objc private func addTapped() {
         onAddTapped?()
     }
-
 }

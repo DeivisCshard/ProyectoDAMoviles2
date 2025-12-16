@@ -8,6 +8,12 @@
 
 import UIKit
 
+
+protocol ProductsViewDelegate: AnyObject {
+    func didTapAddProduct(at index: Int)
+}
+
+
 class ProductsView: UIView {
 //hola
     // MARK: - Properties
@@ -15,15 +21,18 @@ class ProductsView: UIView {
     private let gridStack = UIStackView()
     private let bottomBar = UIStackView()
 
-    private var productViews: [ProductsItemView] = []
+    private var productViews: [ProductItemView] = []
+    
+    weak var delegate: ProductsViewDelegate?
 
     // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .systemBackground
-        setupGrid()
         setupBottomBar()
+        setupGrid()
+        
     }
 
     required init?(coder: NSCoder) {
@@ -44,7 +53,10 @@ class ProductsView: UIView {
             row.distribution = .fillEqually
 
             for _ in 0..<2 {
-                let productView = ProductsItemView()
+                let productView = ProductItemView()
+                productView.translatesAutoresizingMaskIntoConstraints = false
+                productView.heightAnchor.constraint(equalToConstant: 190).isActive = true
+
                 productViews.append(productView)
                 row.addArrangedSubview(productView)
             }
@@ -58,9 +70,12 @@ class ProductsView: UIView {
             gridStack.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
             gridStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             gridStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            gridStack.heightAnchor.constraint(equalToConstant: 360)
+            gridStack.bottomAnchor.constraint(equalTo: bottomBar.topAnchor, constant: -16)
         ])
     }
+    
+    
+    
 
     // MARK: - Bottom Bar
 
@@ -94,9 +109,13 @@ class ProductsView: UIView {
         }
     }
 
-    func updateImages(_ images: [UIImage]) {
-        for (index, image) in images.enumerated() {
-            productViews[index].configure(image: image, price: "$30")
+    func updateProducts(_ products: [Product]) {
+        for (index, product) in products.enumerated() {
+            productViews[index].configure(product: product)
+            productViews[index].onAddTapped = { [weak self] in
+                self?.delegate?.didTapAddProduct(at: index)
+            }
         }
     }
+
 }
