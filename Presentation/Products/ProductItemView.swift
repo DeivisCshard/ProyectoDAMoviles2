@@ -13,6 +13,11 @@ class ProductsItemView: UIView {
     private let infoView = UIView()
     private let priceLabel = UILabel()
     private let addButton = UIButton(type: .system)
+    
+    private let nameLabel = UILabel()
+    private let stockLabel = UILabel()
+
+    var onAddTapped: (() -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,14 +42,27 @@ class ProductsItemView: UIView {
         priceLabel.font = .boldSystemFont(ofSize: 16)
 
         // Button
-        addButton.setTitle("+", for: .normal)
-        addButton.tintColor = .white
-        addButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        addButton.setTitle("Agregar", for: .normal)
+        addButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
 
-        let infoStack = UIStackView(arrangedSubviews: [priceLabel, addButton])
+        
+        // nombre
+        nameLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        nameLabel.numberOfLines = 2
+        //stock
+        stockLabel.font = .systemFont(ofSize: 12)
+        stockLabel.textColor = .white
+
+        
+        let leftStack = UIStackView(arrangedSubviews: [nameLabel, priceLabel, stockLabel])
+        leftStack.axis = .vertical
+        leftStack.spacing = 2
+
+        let infoStack = UIStackView(arrangedSubviews: [leftStack, addButton])
         infoStack.axis = .horizontal
         infoStack.distribution = .equalSpacing
-        infoStack.translatesAutoresizingMaskIntoConstraints = false
+
 
         infoView.addSubview(infoStack)
         addSubview(imageView)
@@ -67,8 +85,15 @@ class ProductsItemView: UIView {
         ])
     }
 
-    func configure(image: UIImage, price: String) {
-        imageView.image = image
-        priceLabel.text = price
+    func configure(product: Product) {
+        imageView.image = product.image
+        nameLabel.text = product.name
+        priceLabel.text = product.price
+        stockLabel.text = "Stock: \(product.stock)"
     }
+
+    @objc private func addTapped() {
+        onAddTapped?()
+    }
+
 }
