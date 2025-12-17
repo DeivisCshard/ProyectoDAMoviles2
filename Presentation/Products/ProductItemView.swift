@@ -5,6 +5,7 @@
 //  Created by DESIGN on 15/12/25.
 //
 
+/*
 import UIKit
 
 class ProductItemView: UIView {
@@ -96,3 +97,4 @@ class ProductItemView: UIView {
         onAddTapped?()
     }
 }
+ */

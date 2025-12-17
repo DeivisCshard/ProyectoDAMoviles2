@@ -5,6 +5,7 @@
 //  Created by DESIGN on 15/12/25.
 //
 
+/*
 import UIKit
 
 class ProductsViewController: UIViewController {
@@ -72,3 +73,4 @@ extension ProductsViewController: ProductsViewDelegate {
         productsView.updateProducts(products)
     }
 }
+ */

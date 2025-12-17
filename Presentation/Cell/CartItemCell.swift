@@ -4,6 +4,7 @@
 //
 //  Created by DESIGN on 17/12/25.
 //
+/*
 import UIKit
 
 class CartItemCell: UITableViewCell {
@@ -60,3 +61,4 @@ class CartItemCell: UITableViewCell {
         priceLabel.text = "$\(product.price)"
     }
 }
+*/
