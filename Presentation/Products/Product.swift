@@ -11,6 +11,6 @@ struct Product {
     let id: UUID = UUID()
     let name: String
     let image: UIImage
-    var price: String
+    var price: Double
     var stock: Int
 }
