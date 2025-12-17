@@ -28,6 +28,7 @@ class ProductFormViewController: UIViewController {
     private let productImageView = UIImageView()
     private let selectImageButton = UIButton(type: .system)
     private let saveButton = UIButton(type: .system)
+    private let categoryTextField = UITextField()
 
     private var selectedImage: UIImage?
 
@@ -118,6 +119,12 @@ class ProductFormViewController: UIViewController {
         saveButton.layer.cornerRadius = 8
         contentView.addSubview(saveButton)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Category TextField
+        categoryTextField.placeholder = "Category"
+        categoryTextField.borderStyle = .roundedRect
+        contentView.addSubview(categoryTextField)
+        categoryTextField.translatesAutoresizingMaskIntoConstraints = false
 
         // Constraints
         NSLayoutConstraint.activate([
@@ -132,8 +139,12 @@ class ProductFormViewController: UIViewController {
             stockTextField.topAnchor.constraint(equalTo: priceTextField.bottomAnchor, constant: padding),
             stockTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             stockTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-
-            productImageView.topAnchor.constraint(equalTo: stockTextField.bottomAnchor, constant: padding),
+            
+            categoryTextField.topAnchor.constraint(equalTo: stockTextField.bottomAnchor, constant: padding),
+            categoryTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            categoryTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+                
+            productImageView.topAnchor.constraint(equalTo: categoryTextField.bottomAnchor, constant: padding),
             productImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             productImageView.widthAnchor.constraint(equalToConstant: 120),
             productImageView.heightAnchor.constraint(equalToConstant: 120),
@@ -158,6 +169,7 @@ class ProductFormViewController: UIViewController {
         guard let product = productToEdit else { return }
         nameTextField.text = product.name
         priceTextField.text = String(product.price)
+        categoryTextField.text = product.category
         stockTextField.text = String(product.stock)
         if let data = product.image, let uiImage = UIImage(data: data) {
             productImageView.image = uiImage
@@ -177,15 +189,16 @@ class ProductFormViewController: UIViewController {
         guard let name = nameTextField.text, !name.isEmpty,
               let priceText = priceTextField.text, let price = Double(priceText),
               let stockText = stockTextField.text, let stock = Int16(stockText),
+              let category = categoryTextField.text, !category.isEmpty,
               let image = selectedImage else {
             showAlert(message: "Please fill all fields and select an image.")
             return
         }
 
         if let product = productToEdit {
-            vm.updateProduct(product: product, name: name, image: image, price: price, stock: stock)
+            vm.updateProduct(product: product, name: name, image: image, price: price, stock: stock, category: category)
         } else {
-            vm.addProduct(name: name, image: image, price: price, stock: stock)
+            vm.addProduct(name: name, image: image, price: price, stock: stock, category: category)
         }
 
         delegate?.didUpdateProducts()

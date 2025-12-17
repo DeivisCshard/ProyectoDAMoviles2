@@ -27,23 +27,25 @@ class ProductViewModel: ObservableObject {
         }
     }
     
-    func addProduct(name: String, image: UIImage, price: Double, stock: Int16) {
+    func addProduct(name: String, image: UIImage, price: Double, stock: Int16, category: String) {
         let newProduct = Product(context: context)
         newProduct.id = UUID()
         newProduct.name = name
         newProduct.image = image.pngData()
         newProduct.price = price
         newProduct.stock = stock
-        
+        newProduct.category = category  // ✅ Nuevo campo
+
         saveContext()
     }
-    
-    func updateProduct(product: Product, name: String, image: UIImage, price: Double, stock: Int16) {
+
+    func updateProduct(product: Product, name: String, image: UIImage, price: Double, stock: Int16, category: String) {
         product.name = name
         product.image = image.pngData()
         product.price = price
         product.stock = stock
-        
+        product.category = category  // ✅ Nuevo campo
+
         saveContext()
     }
     

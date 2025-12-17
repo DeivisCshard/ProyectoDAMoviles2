@@ -155,6 +155,6 @@ class ProductCell: UITableViewCell {
             productImageView.image = UIImage(systemName: "photo")
         }
         nameLabel.text = product.name
-        detailLabel.text = "Stock: \(product.stock) - $\(product.price)"
+        detailLabel.text = "Stock: \(product.stock) - $\(product.price) - \(product.category ?? "")"
     }
 }
