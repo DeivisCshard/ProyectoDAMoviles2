@@ -12,13 +12,14 @@ class CartViewController: UIViewController {
     private let tableView = UITableView()
     var cartItems: [Product] = []
 
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Carrito"
         view.backgroundColor = .systemBackground
         setupTable()
     }
-
     private func setupTable() {
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
