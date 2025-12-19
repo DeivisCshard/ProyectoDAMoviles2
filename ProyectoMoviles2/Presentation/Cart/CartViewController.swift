@@ -6,17 +6,21 @@
 //
 
 import UIKit
+import CoreData
 
 class CartViewController: UIViewController {
 
-    var cartItems: [Product] = []
+    var tempCart: [TempCartItem] = [] // no Core Data aún
+    var onCheckoutComplete: (() -> Void)?   // <-- aquí agregamos el callback
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
     private let totalLabel = UILabel()
     private let checkoutButton = UIButton(type: .system)
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Carrito"
@@ -94,7 +98,7 @@ class CartViewController: UIViewController {
     private func updateCartItems() {
         stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        for item in cartItems {
+        for item in tempCart {
             let itemView = createItemView(for: item)
             stackView.addArrangedSubview(itemView)
         }
@@ -102,58 +106,89 @@ class CartViewController: UIViewController {
         updateTotal()
     }
 
-    private func createItemView(for product: Product) -> UIView {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 60).isActive = true
+    private func createItemView(for item: TempCartItem) -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
 
-        let imageView = UIImageView(image: product.image)
+        // Imagen
+        let imageView = UIImageView()
+        if let data = item.product.image {
+            imageView.image = UIImage(data: data)
+        }
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
+        // Nombre
         let nameLabel = UILabel()
-        nameLabel.text = product.name
+        nameLabel.text = item.product.name
         nameLabel.font = .systemFont(ofSize: 16)
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.numberOfLines = 0
+        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
-        let priceLabel = UILabel()
-        priceLabel.text = "$\(String(format: "%.2f", product.price))"
-        priceLabel.font = .boldSystemFont(ofSize: 16)
-        priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        // Cantidad + Precio
+        let detailLabel = UILabel()
+        detailLabel.text = "Cantidad: \(item.quantity) • Precio: $\(String(format: "%.2f", item.total))"
+        detailLabel.font = .systemFont(ofSize: 14)
+        detailLabel.textColor = .darkGray
+        detailLabel.numberOfLines = 1
 
-        let hStack = UIStackView(arrangedSubviews: [imageView, nameLabel, priceLabel])
+        // Stack vertical para nombre + detalles
+        let vStack = UIStackView(arrangedSubviews: [nameLabel, detailLabel])
+        vStack.axis = .vertical
+        vStack.spacing = 4
+        vStack.alignment = .leading
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+
+        // Stack horizontal imagen + vStack
+        let hStack = UIStackView(arrangedSubviews: [imageView, vStack])
         hStack.axis = .horizontal
         hStack.spacing = 12
         hStack.alignment = .center
-        hStack.distribution = .fillProportionally
         hStack.translatesAutoresizingMaskIntoConstraints = false
 
-        view.addSubview(hStack)
+        container.addSubview(hStack)
 
         NSLayoutConstraint.activate([
-            hStack.topAnchor.constraint(equalTo: view.topAnchor),
-            hStack.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            hStack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hStack.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            hStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            hStack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+            hStack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            hStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16)
         ])
 
-        return view
+        return container
     }
 
     private func updateTotal() {
-        let total = cartItems.reduce(0.0) { $0 + $1.price }
-        totalLabel.text = "Total: $\(String(format: "%.2f", total))"
+        let total = tempCart.reduce(0) { $0 + $1.total }
+        totalLabel.text = String(format: "Total: $%.2f", total)
     }
 
     @objc private func checkoutTapped() {
-        cartItems.removeAll()
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+
+        for item in tempCart {
+            let cartItem = CartEntity(context: context)
+            cartItem.id = UUID()
+            cartItem.createdAt = Date()
+            cartItem.quantity = Int16(item.quantity)
+            cartItem.total = item.total
+            cartItem.product = item.product
+
+            // Reducir stock real
+            item.product.stock -= Int16(item.quantity)
+        }
+
+        try? context.save()
+        tempCart.removeAll()
         updateCartItems()
+
+        // Notificar a ProductsViewController
+        onCheckoutComplete?()
     }
     
-    
-    
-    
 }
+ 
 

@@ -15,7 +15,7 @@ class ProductFormViewController: UIViewController {
 
     // MARK: - Propiedades
     private let vm: ProductViewModel
-    private var productToEdit: Product?
+    private var productToEdit: ProductEntity?
 
     weak var delegate: ProductFormDelegate?
 
@@ -33,7 +33,7 @@ class ProductFormViewController: UIViewController {
     private var selectedImage: UIImage?
 
     // MARK: - Init
-    init(vm: ProductViewModel, productToEdit: Product? = nil) {
+    init(vm: ProductViewModel, productToEdit: ProductEntity? = nil) {
         self.vm = vm
         self.productToEdit = productToEdit
         super.init(nibName: nil, bundle: nil)

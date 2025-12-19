@@ -10,7 +10,7 @@ import CoreData
 import UIKit
 
 class ProductViewModel: ObservableObject {
-    @Published var products: [Product] = []
+    @Published var products: [ProductEntity] = []
     
     private let context = CoreDataManager.shared.context
     
@@ -19,7 +19,7 @@ class ProductViewModel: ObservableObject {
     }
     
     func fetchProducts() {
-        let request: NSFetchRequest<Product> = Product.fetchRequest()
+        let request: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
         do {
             products = try context.fetch(request)
         } catch {
@@ -28,7 +28,7 @@ class ProductViewModel: ObservableObject {
     }
     
     func addProduct(name: String, image: UIImage, price: Double, stock: Int16, category: String) {
-        let newProduct = Product(context: context)
+        let newProduct = ProductEntity(context: context)
         newProduct.id = UUID()
         newProduct.name = name
         newProduct.image = image.pngData()
@@ -39,7 +39,7 @@ class ProductViewModel: ObservableObject {
         saveContext()
     }
 
-    func updateProduct(product: Product, name: String, image: UIImage, price: Double, stock: Int16, category: String) {
+    func updateProduct(product: ProductEntity, name: String, image: UIImage, price: Double, stock: Int16, category: String) {
         product.name = name
         product.image = image.pngData()
         product.price = price
@@ -49,7 +49,7 @@ class ProductViewModel: ObservableObject {
         saveContext()
     }
     
-    func deleteProduct(product: Product) {
+    func deleteProduct(product: ProductEntity) {
         context.delete(product)
         saveContext()
     }
@@ -57,5 +57,10 @@ class ProductViewModel: ObservableObject {
     private func saveContext() {
         CoreDataManager.shared.save()
         fetchProducts()
+        
+        NotificationCenter.default.post(
+            name: NSNotification.Name("ProductsUpdated"),
+            object: nil
+        )
     }
 }

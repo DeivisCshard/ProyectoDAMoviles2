@@ -74,9 +74,6 @@ class ProductsView: UIView {
         ])
     }
     
-    
-    
-
     // MARK: - Bottom Bar
 
     private func setupBottomBar() {
@@ -109,14 +106,32 @@ class ProductsView: UIView {
         }
     }
 
-    func updateProducts(_ products: [Product]) {
+    func updateProducts(_ products: [ProductEntity]) {
+        // Limpiar celdas anteriores
+        gridStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        var rowStack: UIStackView?
+        
         for (index, product) in products.enumerated() {
-            productViews[index].configure(product: product)
-            productViews[index].onAddTapped = { [weak self] in
+            if index % 2 == 0 {
+                rowStack = UIStackView()
+                rowStack!.axis = .horizontal
+                rowStack!.spacing = 12
+                rowStack!.distribution = .fillEqually
+                gridStack.addArrangedSubview(rowStack!)
+            }
+            
+            let productView = ProductItemView()
+            productView.heightAnchor.constraint(equalToConstant: 190).isActive = true
+            productView.configure(product: product)
+            productView.onAddTapped = { [weak self] in
                 self?.delegate?.didTapAddProduct(at: index)
             }
+            
+            rowStack!.addArrangedSubview(productView)
         }
     }
 
 }
+ 
 

@@ -12,6 +12,8 @@ class CartItemCell: UITableViewCell {
     private let productImageView = UIImageView()
     private let nameLabel = UILabel()
     private let priceLabel = UILabel()
+    
+    private let vStack = UIStackView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -23,43 +25,54 @@ class CartItemCell: UITableViewCell {
     }
 
     private func setupUI() {
-        // Configure ImageView
+        // Imagen del producto
         productImageView.contentMode = .scaleAspectFit
         productImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(productImageView)
-
-        // Configure Labels
+        
+        // Etiquetas
         nameLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        nameLabel.numberOfLines = 0  // permite varias líneas
+        nameLabel.lineBreakMode = .byWordWrapping
+            
         priceLabel.font = .systemFont(ofSize: 14, weight: .bold)
         priceLabel.textColor = .systemGreen
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(priceLabel)
+        priceLabel.setContentHuggingPriority(.required, for: .vertical)
 
-        // Layout Constraints
+        // Stack vertical para nombre y precio
+        vStack.axis = .vertical
+        vStack.spacing = 4
+        vStack.alignment = .leading
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        vStack.addArrangedSubview(nameLabel)
+        vStack.addArrangedSubview(priceLabel)
+        contentView.addSubview(vStack)
+
+        // Constraints
         NSLayoutConstraint.activate([
             productImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            productImageView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 10),
+            productImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -10),
             productImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             productImageView.widthAnchor.constraint(equalToConstant: 50),
             productImageView.heightAnchor.constraint(equalToConstant: 50),
-
-            nameLabel.leadingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: 10),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-
-            priceLabel.leadingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: 10),
-            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            priceLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            priceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+                
+            vStack.leadingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: 10),
+            vStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            vStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            vStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         ])
     }
 
-    func configure(with product: Product) {
-        productImageView.image = product.image
-        nameLabel.text = product.name
-        priceLabel.text = "$\(product.price)"
+    func configure(with cartItem: CartEntity) {
+        let product = cartItem.product
+        nameLabel.text = product?.name
+        priceLabel.text = String(format: "$%.2f", cartItem.total)
+        
+        if let data = product?.image {
+            productImageView.image = UIImage(data: data)
+        }
     }
 }
-
-
+ 
+ 

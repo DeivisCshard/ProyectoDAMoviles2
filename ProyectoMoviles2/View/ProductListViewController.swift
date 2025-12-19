@@ -148,7 +148,7 @@ class ProductCell: UITableViewCell {
         ])
     }
     
-    func configure(with product: Product) {
+    func configure(with product: ProductEntity) {
         if let data = product.image, let uiImage = UIImage(data: data) {
             productImageView.image = uiImage
         } else {

@@ -86,15 +86,18 @@ class ProductItemView: UIView {
         ])
     }
 
-    func configure(product: Product) {
-        imageView.image = product.image
+    func configure(product: ProductEntity) {
         nameLabel.text = product.name
-        priceLabel.text = String(format: "$%.2f", product.price)  // Formato adecuado para el precio
+        priceLabel.text = String(format: "$%.2f", product.price)
         stockLabel.text = "Stock: \(product.stock)"
+
+        if let data = product.image {
+            imageView.image = UIImage(data: data)
+        }
     }
 
     @objc private func addTapped() {
         onAddTapped?()
     }
 }
-
+ 
