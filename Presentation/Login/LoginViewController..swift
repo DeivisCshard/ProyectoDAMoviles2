@@ -15,7 +15,7 @@ final class LoginViewController: UIViewController {
     override func loadView() {
         view = loginView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loginView.update(with: state)
@@ -42,20 +42,23 @@ final class LoginViewController: UIViewController {
             return
         }
 
-        // Aquí puedes agregar tu autenticación real
         print("Iniciar sesión con \(username) y \(password)")
 
-        // Marcar sesión como activa
         UserSession.shared.isLoggedIn = true
 
-        // Mostrar alerta de éxito
-        let alert = UIAlertController(title: "¡Éxito!", message: "Ya estás en línea.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Aceptar", style: .default, handler: { _ in
-            // Regresar a ProductsViewController
-            self.navigationController?.popViewController(animated: true)
-        }))
+        let alert = UIAlertController(
+            title: "¡Éxito!",
+            message: "Ya estás en línea.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Aceptar", style: .default) { _ in
+            self.goToMainTabBar()
+        })
+
         present(alert, animated: true)
     }
+
 
     @objc private func registerTapped() {
         let registerVC = RegisterViewController()
@@ -68,4 +71,27 @@ final class LoginViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Aceptar", style: .default))
         present(alert, animated: true)
     }
+    
+    private func goToMainTabBar() {
+        let tabBar = MainTabBarController()
+
+        guard
+            let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+            let sceneDelegate = scene.delegate as? SceneDelegate,
+            let window = sceneDelegate.window
+        else {
+            return
+        }
+
+        UIView.transition(
+            with: window,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {
+                window.rootViewController = tabBar
+            }
+        )
+    }
+
 }
+    

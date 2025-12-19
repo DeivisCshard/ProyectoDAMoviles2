@@ -10,7 +10,7 @@ final class LoginView: UIView {
     // MARK: - Labels y campos
     let titleLabel = UILabel()
     let usernameTextField = UITextField()
-    let passwordTextField = UITextField()   
+    let passwordTextField = UITextField()
     let loginButton = UIButton(type: .system)
     let registerButton = UIButton(type: .system) // propiedad correcta
 

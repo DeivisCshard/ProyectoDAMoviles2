@@ -88,9 +88,10 @@ class ProductItemView: UIView {
     func configure(product: Product) {
         imageView.image = product.image
         nameLabel.text = product.name
-        priceLabel.text = product.price
+        priceLabel.text = String(format: "$%.2f", product.price)
         stockLabel.text = "Stock: \(product.stock)"
     }
+
 
     @objc private func addTapped() {
         onAddTapped?()
